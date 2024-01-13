@@ -13,7 +13,7 @@ funcionamiento.crear_habitaciones(10, habitaciones)
 
 
 while True:
-    os.system('clear')
+    funcionamiento.clear_console()
     menuv2.mostrar_menu()
     for i in clientes_on:
         print(i.monstar_info())

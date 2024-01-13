@@ -54,7 +54,7 @@ def ruleta_clases(valor, indice):
 
 def mostrar_clases(idx, validar, **habitaciones):
     while True:
-        os.system('clear')
+        clear_console()
         menuv2.monstar_info(validar)
 
         menuv2.clases(idx)
