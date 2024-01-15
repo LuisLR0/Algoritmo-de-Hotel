@@ -7,26 +7,33 @@ def clear_console():
 
 
 
+class Habitacion:
+    def __init__(self, nombre=None, edad=None, cedula=None, instancia=None):
+        self.nombre = nombre
+        self.edad = edad
+        self.cedula = cedula
+        self.instancia = instancia
 
-
+    def rentar_modificar(self, cliente):
+        self.nombre = cliente.fullname
+        self.edad = cliente.edad
+        self.cedula = cliente.cedula
+        self.instancia = cliente.instancia
+        
 
 class Clientes:
-
     def __init__(self, fullname, edad, cedula, instancia):
         self.fullname = fullname
         self.edad = edad
         self.cedula = cedula
         self.instancia = instancia
 
+    def rentar_habitacion(self, habitacion):
+        habitacion.rentar_modificar(self)
 
-    def monstar_info(self):
-        return {
-            'status': False,
-            'Nombre': self.fullname,
-            'Edad': self.edad,
-            'Cedula': 'V ' + str(self.cedula),
-            'Instancia': str(self.instancia) + ' Dias'
-        }
+    def modificar_habitacion(self, habitacion):
+        habitacion.rentar_modificar(self)
+
 
 
 
@@ -116,12 +123,13 @@ def monstrar_habitaciones_rentadas(idx, lista_habitaciones_rentadas):
             menuv2.habitaciones_no_rentadas()
         else:
             for hab in lista_habitaciones_rentadas[idx]:
+                habitacion = lista_habitaciones_rentadas[idx][hab]
                 print(f'''
 |~~~~~~~~| Habitacion {hab} |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
-        Nombre = {lista_habitaciones_rentadas[idx][hab]['Nombre']}
-        Edad = {lista_habitaciones_rentadas[idx][hab]['Edad']}
-        Cedula = {lista_habitaciones_rentadas[idx][hab]['Cedula']}
-        Limite de Instancia = {lista_habitaciones_rentadas[idx][hab]['Instancia']}
+        Nombre = {habitacion.nombre}
+        Edad = {habitacion.edad}
+        Cedula = {habitacion.cedula}
+        Limite de Instancia = {habitacion.instancia}
 |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 ''')
 
@@ -202,10 +210,7 @@ def ingresar_datos_habitaciones(validar):
         except ValueError:
             comprobar = True
 
-    cliente_info = Clientes(name, edad, cedula, instancia).monstar_info()
-
-    return cliente_info
-
+    return Clientes(name, edad, cedula, instancia)
 
 
 
@@ -218,8 +223,8 @@ def ingresar_datos_habitaciones(validar):
 
 def rentar_habitacion(validar, idx, val, habitaciones):
     cliente_info = ingresar_datos_habitaciones(validar)
+    cliente_info.rentar_habitacion(habitaciones['no_rentados'][idx][val])
 
-    habitaciones['no_rentados'][idx][val].update(cliente_info)
     habitaciones['rentados'][idx][val] = habitaciones['no_rentados'][idx].pop(val, None)
 
 
@@ -232,12 +237,14 @@ def modificar_habitacion(validar, idx, val, habitaciones):
 
         clear_console()
 
+        habitacion = habitaciones['rentados'][idx][val]
+
         print(f'''
 |~~~~~~~~| Habitacion {val} |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
-        Nombre = {habitaciones['rentados'][idx][val]['Nombre']}
-        Edad = {habitaciones['rentados'][idx][val]['Edad']}
-        Cedula = {habitaciones['rentados'][idx][val]['Cedula']}
-        Limite de Instancia = {habitaciones['rentados'][idx][val]['Instancia']}
+        Nombre = {habitacion.nombre}
+        Edad = {habitacion.edad}
+        Cedula = {habitacion.cedula}
+        Limite de Instancia = {habitacion.instancia}
 |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 ''')
         menuv2.menu_modificar_eliminar()
@@ -248,7 +255,7 @@ def modificar_habitacion(validar, idx, val, habitaciones):
             break
         elif valor == '1':
             cliente_info = ingresar_datos_habitaciones(validar)
-            habitaciones['rentados'][idx][val].update(cliente_info)
+            cliente_info.modificar_habitacion(habitacion)
         elif valor == '2':
             habitaciones['no_rentados'][idx][val] = habitaciones['rentados'][idx].pop(val, None)
             break
@@ -303,4 +310,4 @@ def crear_habitaciones(cantidad, lista_habitaciones): #Puedo colocar para que ag
     for a in range(3):
         for i in range(cantidad):
             temp = f'{letras[a]}-{i+1}'
-            lista_habitaciones[a][temp] = {'status': True}
+            lista_habitaciones[a][temp] = Habitacion()
